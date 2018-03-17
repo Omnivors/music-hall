@@ -5,4 +5,4 @@
 
 
 ## Raspberry Side
-* pd directory
+* music-hall-pd directory
