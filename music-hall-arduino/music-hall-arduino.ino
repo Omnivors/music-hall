@@ -1,40 +1,50 @@
-//HC RS04 Sensore ultrasuoni
-const int triggerPort = 9;
-const int echoPort = 10;
-int freqVal;
+/*
+ *  MusicHall - arduino side
+ *  
+ *  created Apr 2018
+ *  by Francesco Cretti and Luca Morino
+ *  in Turin, Italy
+ * 
+ */
 
-void setup() {
-  pinMode(triggerPort, OUTPUT);
-  pinMode(echoPort, INPUT);
-  pinMode(LED_BUILTIN, OUTPUT);
+/******* GLOBAL VARIABLES *********/
+// SONAR ANALOG PINS
+const int sensorPin[3] = {0, 1, 2};
+// SONAR READINGS
+unsigned int rangeCm[3];
+// SMOOTHING METHOD - exponentially decaying moving average - equivalent window = 10
+const float tiny=1-(1/10.0); 
+
+/******* SETUP *********/
+void setup () {
   Serial.begin(9600);
+  pinMode(LED_BUILTIN, OUTPUT);
 }
 
-void loop() {
-  // porta bassa l'uscita del trigger
-  digitalWrite( triggerPort, LOW );
-  // invia un impulso di 10microsec su trigger
-  digitalWrite( triggerPort, HIGH );
-  delayMicroseconds( 10 );
-  digitalWrite( triggerPort, LOW );
+/******* LOOP *********/
+void loop () {
+  readSensor(0);
+  sendData();
+  delay(100);
+}
 
-  long durata = pulseIn( echoPort, HIGH );
-  long distanza = 0.034 * durata / 2;
+void readSensor (int sensor) {
+  unsigned int analog = analogRead(sensorPin[sensor]);
+  if (analog < 1024) {
+    // TODO see if float is necessary for our needed resolution
+    float volt = analog * (5.0 / 1023.0);
+    unsigned int cm = volt / 0.005 * 2.0;
+    // exp smooth
+    rangeCm[sensor] = tiny * rangeCm[sensor] + (1 - tiny) * cm;
+    }  
+}
 
-  //dopo 38ms è fuori dalla portata del sensore
-  if (durata > 38000) {
-    Serial.write(0);
-  } else {
-    freqVal = map(distanza, 3, 30, 255, 0);
-    freqVal = constrain(freqVal, 0, 255);
-    Serial.write(freqVal);
-  }
-
-  if (distanza < 10) {
-    digitalWrite(LED_BUILTIN, HIGH);
-  } else {
-    digitalWrite(LED_BUILTIN, LOW);
-  }
-
-  delay(60);
+void sendData () {
+  // Send sensor 1 data
+  uint8_t LSB = rangeCm[0];
+  uint8_t MSB = rangeCm[0] >> 8;
+  Serial.write(MSB);
+  Serial.write(LSB);
+  //Serial.println(rangeCm[0]);
+  // Serial.write(rangeCm[0]);
 }
