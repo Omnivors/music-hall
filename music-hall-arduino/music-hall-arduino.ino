@@ -1,11 +1,11 @@
 /*
- *  MusicHall - arduino side
- *  
- *  created Apr 2018
- *  by Francesco Cretti and Luca Morino
- *  in Turin, Italy
- * 
- */
+    MusicHall - arduino side
+
+    created Apr 2018
+    by Francesco Cretti and Luca Morino
+    in Turin, Italy
+
+*/
 
 /******* GLOBAL VARIABLES *********/
 // SONAR ANALOG PINS
@@ -13,7 +13,7 @@ const int sensorPin[3] = {0, 1, 2};
 // SONAR READINGS
 unsigned int rangeCm[3];
 // SMOOTHING METHOD - exponentially decaying moving average - equivalent window = 10
-const float tiny=1-(1/10.0); 
+const float tiny = 1 - (1 / 10.0);
 
 /******* SETUP *********/
 void setup () {
@@ -36,7 +36,7 @@ void readSensor (int sensor) {
     unsigned int cm = volt / 0.005 * 2.0;
     // exp smooth
     rangeCm[sensor] = tiny * rangeCm[sensor] + (1 - tiny) * cm;
-    }  
+  }
 }
 
 void sendData () {
