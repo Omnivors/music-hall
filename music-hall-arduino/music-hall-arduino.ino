@@ -15,32 +15,35 @@ unsigned int rangeCm[3];
 // SMOOTHING METHOD - exponentially decaying moving average - equivalent window = 10
 const float tiny=1-(1/10.0); 
 // Trigger
-const int triggerPin = 2;
+const int triggerPin[3] = {2, 3, 4};
 
 /******* SETUP *********/
 void setup () {
   Serial.begin(9600);
-  pinMode(triggerPin,OUTPUT);
+  pinMode(triggerPin[0],OUTPUT);
+  pinMode(triggerPin[1],OUTPUT);
+  pinMode(triggerPin[2],OUTPUT);
   pinMode(LED_BUILTIN, OUTPUT);
   delay(300);
 }
 
 /******* LOOP *********/
 void loop () {
-  start_sensor();
-  
+  start_sensor(0);
   readSensor(0);
-  //readSensor(1);
-  //readSensor(2); 
-  
-  //sendData(0);
-  send14bitData(0);
-  //sendData(1);
-  //sendData(2);
-  
   //printData(0);
-  
+  send14bitData(0);
   delay(100);
+  start_sensor(1);
+  readSensor(1);
+  //printData(1);
+  send14bitData(1);
+  delay(100);
+  //start_sensor(2);
+  //readSensor(2);
+  //send14bitData(2);
+  //delay(100);
+  //printData(0);
 }
 
 void readSensor (int sensor) {
@@ -81,10 +84,10 @@ void sendData (int sensor) {
 }
 
 void printData (int sensor) {
-   //Serial.print("sensor ");
-  //Serial.print(sensor);
-  //Serial.print(": ");
-  //Serial.println(rangeCm[sensor]);
+  Serial.print("sensor ");
+  Serial.print(sensor);
+  Serial.print(": ");
+  Serial.println(rangeCm[sensor]);
 }
 
 void send14bitData (int sensor) {
@@ -94,8 +97,8 @@ void send14bitData (int sensor) {
   Serial.write(low);
 }
 
-void start_sensor() {
-  digitalWrite(triggerPin,HIGH);
+void start_sensor(int sensor) {
+  digitalWrite(triggerPin[sensor],HIGH);
   delay(1);
-  digitalWrite(triggerPin,LOW);
+  digitalWrite(triggerPin[sensor],LOW);
 }
