@@ -32,18 +32,19 @@ void loop () {
   start_sensor(0);
   readSensor(0);
   //printData(0);
-  send14bitData(0);
+  send12bitData(0);
   delay(100);
   start_sensor(1);
   readSensor(1);
   //printData(1);
-  send14bitData(1);
+  send12bitData(1);
   delay(100);
-  //start_sensor(2);
-  //readSensor(2);
-  //send14bitData(2);
-  //delay(100);
-  //printData(0);
+  start_sensor(2);
+  readSensor(2);
+  //printData(2);
+  send12bitData(2);
+  delay(100);
+  
 }
 
 void readSensor (int sensor) {
@@ -93,6 +94,13 @@ void printData (int sensor) {
 void send14bitData (int sensor) {
   uint8_t low = rangeCm[sensor] & 0b01111111; // seven least significant bits (bits 0-6)
   uint8_t high = (rangeCm[sensor] >> 7) & 0b01111111; // bits 7-13
+  Serial.write(0b10000000 | high); // set bit 7 to 1, to indicate that this is these are the seven high bits.
+  Serial.write(low);
+}
+
+void send12bitData (int sensor) {
+  uint8_t low = rangeCm[sensor] & 0b01111111; // seven least significant bits (bits 0-6)
+  uint8_t high = ((rangeCm[sensor] >> 7) & 0b00011111) + ( 32 * sensor); // bits 7-11 + 
   Serial.write(0b10000000 | high); // set bit 7 to 1, to indicate that this is these are the seven high bits.
   Serial.write(low);
 }
