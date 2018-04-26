@@ -1,10 +1,10 @@
 /*
  *  MusicHall - arduino side
- *  
+ *
  *  created Apr 2018
  *  by Francesco Cretti and Luca Morino
  *  in Turin, Italy
- * 
+ *
  */
 
 /******* GLOBAL VARIABLES *********/
@@ -13,7 +13,7 @@ const int sensorPin[3] = {0, 1, 2};
 // SONAR READINGS
 unsigned int rangeCm[3];
 // SMOOTHING METHOD - exponentially decaying moving average - equivalent window = 10
-const float tiny=1-(1/10.0); 
+const float tiny=1-(1/10.0);
 // Trigger
 const int triggerPin[3] = {2, 3, 4};
 
@@ -44,7 +44,7 @@ void loop () {
   //printData(2);
   send12bitData(2);
   delay(100);
-  
+
 }
 
 void readSensor (int sensor) {
@@ -55,7 +55,7 @@ void readSensor (int sensor) {
     unsigned int cm = volt / 0.005 * 2.0;
     // exp smooth
     rangeCm[sensor] = tiny * rangeCm[sensor] + (1 - tiny) * cm;
-    }  
+    }
 }
 
 void sendAllData () {
@@ -99,9 +99,10 @@ void send14bitData (int sensor) {
 }
 
 void send12bitData (int sensor) {
+  uint8_t check = 0b10000000 | (32 * sensor); // choose sensor
   uint8_t low = rangeCm[sensor] & 0b01111111; // seven least significant bits (bits 0-6)
-  uint8_t high = ((rangeCm[sensor] >> 7) & 0b00011111) + ( 32 * sensor); // bits 7-11 + 
-  Serial.write(0b10000000 | high); // set bit 7 to 1, to indicate that this is these are the seven high bits.
+  uint8_t high = ((rangeCm[sensor] >> 7) & 0b00011111); // bits 7-11
+  Serial.write(check | high); // set bit 7 to 1, to indicate that this is these are the seven high bits.
   Serial.write(low);
 }
 
