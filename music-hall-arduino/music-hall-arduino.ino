@@ -102,7 +102,16 @@ void send12bitData (int sensor) {
   uint8_t check = 0b10000000 | (32 * sensor); // choose sensor
   uint8_t low = rangeCm[sensor] & 0b01111111; // seven least significant bits (bits 0-6)
   uint8_t high = ((rangeCm[sensor] >> 7) & 0b00011111); // bits 7-11
-  Serial.write(check | high); // set bit 7 to 1, to indicate that this is these are the seven high bits.
+          high = check | high;
+  //Serial.print("sensor ");
+  //Serial.println(sensor);
+  //Serial.print("value int ");
+  //Serial.println(rangeCm[sensor]);
+  //Serial.print("high ");
+  //Serial.println(high); // set bit 7 to 1, to indicate that this is these are the seven high bits.
+  //Serial.print("low ");
+  //Serial.println(low);
+  Serial.write(high);
   Serial.write(low);
 }
 
