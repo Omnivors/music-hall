@@ -1,10 +1,10 @@
 /*
  *  MusicHall - arduino side
- *  
+ *
  *  created Apr 2018
  *  by Francesco Cretti and Luca Morino
  *  in Turin, Italy
- * 
+ *
  */
 
 /******* GLOBAL VARIABLES *********/
@@ -13,31 +13,38 @@ const int sensorPin[3] = {0, 1, 2};
 // SONAR READINGS
 unsigned int rangeCm[3];
 // SMOOTHING METHOD - exponentially decaying moving average - equivalent window = 10
-const float tiny=1-(1/10.0); 
+const float tiny=1-(1/10.0);
 // Trigger
-const int triggerPin = 2;
+const int triggerPin[3] = {2, 3, 4};
 
 /******* SETUP *********/
 void setup () {
   Serial.begin(9600);
-  pinMode(triggerPin,OUTPUT);
+  pinMode(triggerPin[0],OUTPUT);
+  pinMode(triggerPin[1],OUTPUT);
+  pinMode(triggerPin[2],OUTPUT);
   pinMode(LED_BUILTIN, OUTPUT);
   delay(300);
 }
 
 /******* LOOP *********/
 void loop () {
-  start_sensor();
-  
+  start_sensor(0);
   readSensor(0);
+  //printData(0);
+  send12bitData(0);
+  delay(100);
+  start_sensor(1);
   readSensor(1);
-  readSensor(2); 
-  
-  sendData(0);
-  sendData(1);
-  sendData(2);
-  
-  delay(300);
+  //printData(1);
+  send12bitData(1);
+  delay(100);
+  start_sensor(2);
+  readSensor(2);
+  //printData(2);
+  send12bitData(2);
+  delay(100);
+
 }
 
 void readSensor (int sensor) {
@@ -48,10 +55,10 @@ void readSensor (int sensor) {
     unsigned int cm = volt / 0.005 * 2.0;
     // exp smooth
     rangeCm[sensor] = tiny * rangeCm[sensor] + (1 - tiny) * cm;
-    }  
+    }
 }
 
-void sendData () {
+void sendAllData () {
   // Send sensor 1 data
   uint8_t LSB0 = rangeCm[0];
   uint8_t MSB0 = rangeCm[0] >> 8;
@@ -71,19 +78,45 @@ void sendData () {
 }
 
 void sendData (int sensor) {
-  // Send sensor 1 data
-  uint8_t LSB0 = rangeCm[sensor];
-  uint8_t MSB0 = rangeCm[sensor] >> 8;
-  //Serial.write(MSB);
-  //Serial.write(LSB);
+  uint8_t LSB = rangeCm[sensor];
+  uint8_t MSB = rangeCm[sensor] >> 8;
+  Serial.write(MSB);
+  Serial.write(LSB);
+}
+
+void printData (int sensor) {
   Serial.print("sensor ");
   Serial.print(sensor);
   Serial.print(": ");
   Serial.println(rangeCm[sensor]);
 }
 
-void start_sensor() {
-  digitalWrite(triggerPin,HIGH);
+void send14bitData (int sensor) {
+  uint8_t low = rangeCm[sensor] & 0b01111111; // seven least significant bits (bits 0-6)
+  uint8_t high = (rangeCm[sensor] >> 7) & 0b01111111; // bits 7-13
+  Serial.write(0b10000000 | high); // set bit 7 to 1, to indicate that this is these are the seven high bits.
+  Serial.write(low);
+}
+
+void send12bitData (int sensor) {
+  uint8_t check = 0b10000000 | (32 * sensor); // choose sensor
+  uint8_t low = rangeCm[sensor] & 0b01111111; // seven least significant bits (bits 0-6)
+  uint8_t high = ((rangeCm[sensor] >> 7) & 0b00011111); // bits 7-11
+          high = check | high;
+  //Serial.print("sensor ");
+  //Serial.println(sensor);
+  //Serial.print("value int ");
+  //Serial.println(rangeCm[sensor]);
+  //Serial.print("high ");
+  //Serial.println(high); // set bit 7 to 1, to indicate that this is these are the seven high bits.
+  //Serial.print("low ");
+  //Serial.println(low);
+  Serial.write(high);
+  Serial.write(low);
+}
+
+void start_sensor(int sensor) {
+  digitalWrite(triggerPin[sensor],HIGH);
   delay(1);
-  digitalWrite(triggerPin,LOW);
+  digitalWrite(triggerPin[sensor],LOW);
 }
