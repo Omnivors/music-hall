@@ -9,21 +9,21 @@
 
 /******* GLOBAL VARIABLES *********/
 // SONAR ANALOG PINS
-const int sensorPin[3] = {0, 1, 2};
+const int sensorPin[6] = {0, 1, 2, 3, 4, 5};
 // SONAR READINGS
 unsigned int rangeCm[3];
 // SMOOTHING METHOD - exponentially decaying moving average - equivalent window = 10
 const float tiny=1-(1/10.0);
 // Trigger
-const int triggerPin[3] = {2, 3, 4};
+const int triggerPin[2] = {2, 4};
 
 /******* SETUP *********/
 void setup () {
   Serial.begin(9600);
   pinMode(triggerPin[0],OUTPUT);
   pinMode(triggerPin[1],OUTPUT);
-  pinMode(triggerPin[2],OUTPUT);
-  pinMode(LED_BUILTIN, OUTPUT);
+  //pinMode(triggerPin[2],OUTPUT);
+  //pinMode(LED_BUILTIN, OUTPUT);
   delay(300);
 }
 
@@ -38,11 +38,24 @@ void loop () {
   readSensor(1);
   //printData(1);
   send12bitData(1);
-  delay(100);
+  //delay(100);
   start_sensor(2);
   readSensor(2);
   //printData(2);
   send12bitData(2);
+   start_sensor(3);
+  readSensor(3);
+  //printData(3);
+  send12bitData(3);
+  //delay(100);
+  start_sensor(4);
+  readSensor(4);
+  //printData(4);
+  send12bitData(4);
+  start_sensor(5);
+  readSensor(5);
+  //printData(5);
+  send12bitData(5);
   delay(100);
 
 }
@@ -99,9 +112,9 @@ void send14bitData (int sensor) {
 }
 
 void send12bitData (int sensor) {
-  uint8_t check = 0b10000000 | (32 * sensor); // choose sensor
+  uint8_t check = 0b10000000 | (16 * sensor); // choose sensor
   uint8_t low = rangeCm[sensor] & 0b01111111; // seven least significant bits (bits 0-6)
-  uint8_t high = ((rangeCm[sensor] >> 7) & 0b00011111); // bits 7-11
+  uint8_t high = ((rangeCm[sensor] >> 7) & 0b00001111); // bits 7-11
           high = check | high;
   //Serial.print("sensor ");
   //Serial.println(sensor);
@@ -116,7 +129,8 @@ void send12bitData (int sensor) {
 }
 
 void start_sensor(int sensor) {
-  digitalWrite(triggerPin[sensor],HIGH);
+  int s = sensor > 0;
+  digitalWrite(triggerPin[s],HIGH);
   delay(1);
-  digitalWrite(triggerPin[sensor],LOW);
+  digitalWrite(triggerPin[s],LOW);
 }
