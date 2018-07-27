@@ -38,16 +38,16 @@ void loop () {
   readSensor(1);
   //printData(1);
   send12bitData(1);
-  //delay(100);
+  delay(100);
   start_sensor(2);
   readSensor(2);
   //printData(2);
   send12bitData(2);
-   start_sensor(3);
+  start_sensor(3);
   readSensor(3);
   //printData(3);
   send12bitData(3);
-  //delay(100);
+  delay(100);
   start_sensor(4);
   readSensor(4);
   //printData(4);
@@ -57,7 +57,6 @@ void loop () {
   //printData(5);
   send12bitData(5);
   delay(100);
-
 }
 
 void readSensor (int sensor) {
