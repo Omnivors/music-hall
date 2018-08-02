@@ -8,14 +8,26 @@
  */
 
 /******* GLOBAL VARIABLES *********/
-// SONAR ANALOG PINS
-const int sensorPin[6] = {0, 1, 2, 3, 4, 5};
+// SONAR PINS - 0-5 analog pins - 2,3 pwm pins
+/*
+ * sensorPin[0] - group 0 (trigger pin 4) - analog in A0 - 5V
+ * sensorPin[1] - group 0 (trigger pin 4) - analog in A1 - 5V
+ * sensorPin[2] - group 1 (trigger pin 5) - digital pin 2 - 3.3V
+ * sensorPin[3] - group 2 (trigger pin 6) - digital pin 3 - 3.3V
+ * sensorPin[4] - group 1 (trigger pin 5) - analog pin A2 - 3.3V
+ * sensorPin[5] - group 2 (trigger pin 6) - analog pin A3 - 3.3V
+ * sensorPin[6] - group 1 (trigger pin 5) - analog pin A4 - 3.3V
+ * sensorPin[7] - not used
+ * 
+ */
+const int sensorPin[8] = {0, 1, 2, 3, 2, 3, 4, 3};
+// TRIGGER PINS - 3 triggers used
+const int triggerPin[3] = {4, 5, 6};
 // SONAR READINGS
-unsigned int rangeCm[3];
+unsigned int rangeCm[8];
 // SMOOTHING METHOD - exponentially decaying moving average - equivalent window = 10
 const float tiny=1-(1/10.0);
-// Trigger
-const int triggerPin[2] = {2, 4};
+
 
 /******* SETUP *********/
 void setup () {
@@ -24,51 +36,92 @@ void setup () {
   pinMode(triggerPin[1],OUTPUT);
   //pinMode(triggerPin[2],OUTPUT);
   //pinMode(LED_BUILTIN, OUTPUT);
-  delay(300);
+  delay(1000);
 }
 
 /******* LOOP *********/
 void loop () {
-  start_sensor(0);
-  readSensor(0);
+  
+  readGroup0();
+  
+  //readGroup1();
+  
+  //readGroup0();
+  
+  //readGroup2();
+  
+}
+
+void readGroup0 () {
+  // ****** Trigger sensor 0 and 1 (analog) ******
+  start_sensor_group_0();
+  // ****** Sensor 0 analog reading ******
+  readSensor(0); 
   //printData(0);
   send12bitData(0);
-  delay(100);
-  start_sensor(1);
+  // ****** Sensor 1 analog reading  ******
   readSensor(1);
   //printData(1);
   send12bitData(1);
   delay(100);
-  start_sensor(2);
-  readSensor(2);
+}
+
+void readGroup1 () {
+  // ***** Trigger sensor 2 (PWM) 4 and 6 (analog) ******
+  start_sensor_group_1();
+  // ***** Sensor 2 PWM reading ******
+  readSensor(2); 
   //printData(2);
   send12bitData(2);
-  start_sensor(3);
-  readSensor(3);
-  //printData(3);
-  send12bitData(3);
-  delay(100);
-  start_sensor(4);
+  //delay(100);
+  // ***** Sensor 4 analog reading ******
   readSensor(4);
   //printData(4);
   send12bitData(4);
-  start_sensor(5);
+  // ***** Sensor 6 analog reading ******
+  readSensor(6);
+  //printData(6);
+  send12bitData(6);
+  delay(100);
+}
+
+void readGroup2 () {
+  // ***** Trigger sensor 3 (PWM) 5 (analog) ******
+  start_sensor_group_2();
+  // ***** Sensor 2 PWM reading ******
+  readSensor(3); 
+  //printData(3);
+  send12bitData(3);
+  //delay(100);
+  // ***** Sensor 5 analog reading ******
   readSensor(5);
   //printData(5);
   send12bitData(5);
   delay(100);
 }
 
-void readSensor (int sensor) {
-  unsigned int analog = analogRead(sensorPin[sensor]);
-  if (analog < 1024) {
-    // TODO see if float is necessary for our needed resolution
-    float volt = analog * (5.0 / 1023.0);
-    unsigned int cm = volt / 0.005 * 2.0;
-    // exp smooth
-    rangeCm[sensor] = tiny * rangeCm[sensor] + (1 - tiny) * cm;
+void readSensor (int sensor_number) {
+   // Serial.print("sensor ");
+    //Serial.print(sensor_number);
+    //Serial.print(" pin ");
+    //Serial.println(sensorPin[sensor_number]);
+  if (sensor_number == 2 || sensor_number == 3) {
+    // pwm reading for sensors 2 and 3
+    unsigned int pwmVal = pulseIn(sensorPin[sensor_number], HIGH);
+    rangeCm[sensor_number] = pwmVal/58;
+    delay(10);
+  } else {
+    // analog reading 
+    unsigned int analog = analogRead(sensorPin[sensor_number]);
+    if (analog < 1024) {
+      float volt = analog * (5.0 / 1023.0);
+      unsigned int cm = volt / 0.005 * 2.0;
+      // exp smooth
+      rangeCm[sensor_number] = tiny * rangeCm[sensor_number] + (1 - tiny) * cm;
+      }
     }
 }
+
 
 void sendAllData () {
   // Send sensor 1 data
@@ -114,8 +167,7 @@ void send12bitData (int sensor) {
   uint8_t check = 0b10000000 | (16 * sensor); // choose sensor
   uint8_t low = rangeCm[sensor] & 0b01111111; // seven least significant bits (bits 0-6)
   uint8_t high = ((rangeCm[sensor] >> 7) & 0b00001111); // bits 7-11
-          high = check | high;
-  //Serial.print("sensor ");
+          high = check | high; 
   //Serial.println(sensor);
   //Serial.print("value int ");
   //Serial.println(rangeCm[sensor]);
@@ -132,4 +184,22 @@ void start_sensor(int sensor) {
   digitalWrite(triggerPin[s],HIGH);
   delay(1);
   digitalWrite(triggerPin[s],LOW);
+}
+
+void start_sensor_group_0() {
+  digitalWrite(triggerPin[0],HIGH);
+  delay(1);
+  digitalWrite(triggerPin[0],LOW);
+}
+
+void start_sensor_group_1() {
+  digitalWrite(triggerPin[1],HIGH);
+  delay(1);
+  digitalWrite(triggerPin[1],LOW);
+}
+
+void start_sensor_group_2() {
+  digitalWrite(triggerPin[2],HIGH);
+  delay(1);
+  digitalWrite(triggerPin[2],LOW);
 }
