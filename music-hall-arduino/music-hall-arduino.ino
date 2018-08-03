@@ -42,13 +42,13 @@ void setup () {
 /******* LOOP *********/
 void loop () {
   
-  //readGroup0();
+  readGroup0();
   
-  readGroup1();
+  /*readGroup1();
   
-  //readGroup0();
+  readGroup0();
   
-  //readGroup2();
+  readGroup2();*/
   
 }
 
@@ -56,13 +56,13 @@ void readGroup0 () {
   // ****** Trigger sensor 0 and 1 (analog) ******
   start_sensor_group_0();
   // ****** Sensor 0 analog reading ******
-  //readSensor(0); 
+  readSensor(0); 
   //printData(0);
-  //send12bitData(0);
+  send12bitData(0);
   // ****** Sensor 1 PWM reading  ******
   readSensor(1);
-  printData(1);
-  //send12bitData(1);
+  //printData(1);
+  send12bitData(1);
   delay(100);
 }
 
@@ -94,8 +94,8 @@ void readGroup2 () {
   //send12bitData(3);
   //delay(100);
   // ***** Sensor 5 analog reading ******
-  readSensor(5);
-  printData(5);
+  //readSensor(5);
+  //printData(5);
   //send12bitData(5);
   delay(100);
 }
