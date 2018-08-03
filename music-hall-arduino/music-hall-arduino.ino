@@ -11,7 +11,7 @@
 // SONAR PINS - 0-5 analog pins - 2,3 pwm pins
 /*
  * sensorPin[0] - group 0 (trigger pin 4) - analog in A0 - 5V
- * sensorPin[1] - group 0 (trigger pin 4) - analog in A1 - 5V
+ * sensorPin[1] - group 0 (trigger pin 4) - digital pin 8 - 5V
  * sensorPin[2] - group 1 (trigger pin 5) - digital pin 2 - 3.3V
  * sensorPin[3] - group 2 (trigger pin 6) - digital pin 3 - 3.3V
  * sensorPin[4] - group 1 (trigger pin 5) - analog pin A2 - 3.3V
@@ -20,7 +20,7 @@
  * sensorPin[7] - not used
  * 
  */
-const int sensorPin[8] = {0, 1, 2, 3, 2, 3, 4, 3};
+const int sensorPin[8] = {0, 8, 2, 3, 2, 3, 4, 3};
 // TRIGGER PINS - 3 triggers used
 const int triggerPin[3] = {4, 5, 6};
 // SONAR READINGS
@@ -59,7 +59,7 @@ void readGroup0 () {
   readSensor(0); 
   //printData(0);
   send12bitData(0);
-  // ****** Sensor 1 analog reading  ******
+  // ****** Sensor 1 PWM reading  ******
   readSensor(1);
   //printData(1);
   send12bitData(1);
@@ -71,17 +71,17 @@ void readGroup1 () {
   start_sensor_group_1();
   // ***** Sensor 2 PWM reading ******
   readSensor(2); 
-  //printData(2);
-  send12bitData(2);
+  printData(2);
+  //send12bitData(2);
   //delay(100);
   // ***** Sensor 4 analog reading ******
   readSensor(4);
   //printData(4);
-  send12bitData(4);
+  //send12bitData(4);
   // ***** Sensor 6 analog reading ******
   readSensor(6);
   //printData(6);
-  send12bitData(6);
+  //send12bitData(6);
   delay(100);
 }
 
@@ -105,7 +105,7 @@ void readSensor (int sensor_number) {
     //Serial.print(sensor_number);
     //Serial.print(" pin ");
     //Serial.println(sensorPin[sensor_number]);
-  if (sensor_number == 2 || sensor_number == 3) {
+  if (sensor_number == 1 || sensor_number == 2 || sensor_number == 3) {
     // pwm reading for sensors 2 and 3
     unsigned int pwmVal = pulseIn(sensorPin[sensor_number], HIGH);
     rangeCm[sensor_number] = pwmVal/58;
@@ -116,8 +116,9 @@ void readSensor (int sensor_number) {
     if (analog < 1024) {
       float volt = analog * (5.0 / 1023.0);
       unsigned int cm = volt / 0.005 * 2.0;
+      rangeCm[sensor_number] = cm;
       // exp smooth
-      rangeCm[sensor_number] = tiny * rangeCm[sensor_number] + (1 - tiny) * cm;
+      //rangeCm[sensor_number] = tiny * rangeCm[sensor_number] + (1 - tiny) * cm;
       }
     }
 }
