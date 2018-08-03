@@ -42,9 +42,9 @@ void setup () {
 /******* LOOP *********/
 void loop () {
   
-  readGroup0();
+  //readGroup0();
   
-  //readGroup1();
+  readGroup1();
   
   //readGroup0();
   
@@ -56,13 +56,13 @@ void readGroup0 () {
   // ****** Trigger sensor 0 and 1 (analog) ******
   start_sensor_group_0();
   // ****** Sensor 0 analog reading ******
-  readSensor(0); 
+  //readSensor(0); 
   //printData(0);
-  send12bitData(0);
+  //send12bitData(0);
   // ****** Sensor 1 PWM reading  ******
   readSensor(1);
-  //printData(1);
-  send12bitData(1);
+  printData(1);
+  //send12bitData(1);
   delay(100);
 }
 
@@ -70,17 +70,17 @@ void readGroup1 () {
   // ***** Trigger sensor 2 (PWM) 4 and 6 (analog) ******
   start_sensor_group_1();
   // ***** Sensor 2 PWM reading ******
-  readSensor(2); 
-  printData(2);
+  //readSensor(2); 
+  //printData(2);
   //send12bitData(2);
   //delay(100);
   // ***** Sensor 4 analog reading ******
-  readSensor(4);
+  //readSensor(4);
   //printData(4);
   //send12bitData(4);
   // ***** Sensor 6 analog reading ******
   readSensor(6);
-  //printData(6);
+  printData(6);
   //send12bitData(6);
   delay(100);
 }
@@ -89,22 +89,18 @@ void readGroup2 () {
   // ***** Trigger sensor 3 (PWM) 5 (analog) ******
   start_sensor_group_2();
   // ***** Sensor 2 PWM reading ******
-  readSensor(3); 
+  //readSensor(3); 
   //printData(3);
-  send12bitData(3);
+  //send12bitData(3);
   //delay(100);
   // ***** Sensor 5 analog reading ******
   readSensor(5);
-  //printData(5);
-  send12bitData(5);
+  printData(5);
+  //send12bitData(5);
   delay(100);
 }
 
 void readSensor (int sensor_number) {
-   // Serial.print("sensor ");
-    //Serial.print(sensor_number);
-    //Serial.print(" pin ");
-    //Serial.println(sensorPin[sensor_number]);
   if (sensor_number == 1 || sensor_number == 2 || sensor_number == 3) {
     // pwm reading for sensors 2 and 3
     unsigned int pwmVal = pulseIn(sensorPin[sensor_number], HIGH);
