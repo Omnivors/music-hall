@@ -44,11 +44,11 @@ void loop () {
   
   readGroup0();
   
-  /*readGroup1();
+  readGroup1();
   
   readGroup0();
   
-  readGroup2();*/
+  readGroup2();
   
 }
 
@@ -80,8 +80,8 @@ void readGroup1 () {
   //send12bitData(4);
   // ***** Sensor 6 analog reading ******
   readSensor(6);
-  printData(6);
-  //send12bitData(6);
+  //printData(6);
+  send12bitData(6);
   delay(100);
 }
 
@@ -94,9 +94,9 @@ void readGroup2 () {
   //send12bitData(3);
   //delay(100);
   // ***** Sensor 5 analog reading ******
-  //readSensor(5);
+  readSensor(5);
   //printData(5);
-  //send12bitData(5);
+  send12bitData(5);
   delay(100);
 }
 
