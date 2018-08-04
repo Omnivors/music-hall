@@ -3,7 +3,7 @@
 
 ## Equipment:
 * Arduino Uno
-* HC RS04 Ultrasonic sensor
+* MB1260 XL-MaxSonar-EZL0
 * Raspberry with PureData
 * Audio speaker
 
