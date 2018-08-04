@@ -1,14 +1,18 @@
 # MusicHall
-### First prototype for Music Hall sound installation
+### *Artwork design and performances by Alex Cecchetti*
+### *Technical concept by Luca Morino and Francesco Cretti*
+### *Current version for installation at VOID Gallery, Derry, Northern Ireland*
+### *August 2018*
+### 
 
 ## Equipment:
 * Arduino Uno
-* MB1260 XL-MaxSonar-EZL0
-* Raspberry with PureData
-* Audio speaker
+* at least 2x MB1260 XL-MaxSonar-EZL0
+* Raspberry Pi with PureData
+* Audio speakers
 
 ## Set-up:
-* Connect HC RS04 to Arduino (follow data sheet instructions)
+* Connect sonar to Arduino (follow data sheet instructions)
 * Download and install MusicHall Arduino sketch
 * Download PureData patch and open it on Raspberry side
 * Connect Arduino to Raspberry with USB cable
