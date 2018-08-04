@@ -1,9 +1,9 @@
 # MusicHall
-### *Artwork design and performances by Alex Cecchetti*
-### *Technical concept by Luca Morino and Francesco Cretti*
-### *Current version for installation at VOID Gallery, Derry, Northern Ireland*
-### *August 2018*
-### 
+*Artwork design and performances by Alex Cecchetti*
+*Technical concept by Luca Morino and Francesco Cretti*
+*Current version for installation at VOID Gallery, Derry, Northern Ireland*
+*August 2018*
+ 
 
 ## Equipment:
 * Arduino Uno
